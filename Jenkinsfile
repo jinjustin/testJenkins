@@ -19,7 +19,7 @@ pipeline {
 
         stage('Test') {
             steps {
-                ./hello-world
+                go run hello-world.go
             }
         }
         
