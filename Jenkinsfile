@@ -1,15 +1,32 @@
 pipeline {
-    agent {
-        docker {
-            image 'node:latest' 
-            args '-p 3000:3000' 
-        }
+    agent any
+    tools {
+        go 'go1.14'
     }
-    stages {
-        stage('Build') { 
+    stages {        
+        stage('Pre Test') {
             steps {
-                sh 'npm install' 
+                go version
             }
         }
+        
+        stage('Build') {
+            steps {
+                echo 'Compiling and building'
+                go build
+            }
+        }
+
+        stage('Test') {
+            steps {
+                ./hello-world
+            }
+        }
+        
     }
+    post {
+        always {
+            echo 'Finish Pipeline'
+        }
+    }  
 }
