@@ -6,20 +6,22 @@ pipeline {
     stages {        
         stage('Pre Test') {
             steps {
-                go version
+                echo 'Dependencies'
+                sh 'go version'
+                sh 'go get -u golang.org/x/lint/golint'
             }
         }
         
         stage('Build') {
             steps {
                 echo 'Compiling and building'
-                go build
+                sh 'go build'
             }
         }
 
         stage('Test') {
             steps {
-                go run hello-world.go
+                sh 'go run hello-world.go'
             }
         }
         
