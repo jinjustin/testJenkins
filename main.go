@@ -17,16 +17,44 @@ type Article struct {
 }
 
 // Articles is ...
-var Articles []Article
+var Articles := []Article
+
+
 
 func homePage(w http.ResponseWriter, r *http.Request){
-    fmt.Fprintf(w, "Welcome to the HomePage!")
+    w.Write([]byte("Welcome to the HomePage!"))
+    //fmt.Fprintf(w, "Welcome to the HomePage!")
     fmt.Println("Endpoint Hit: homePage")
 }
 
 func returnAllArticles(w http.ResponseWriter, r *http.Request){
-    fmt.Println("Endpoint Hit: returnAllArticles")
-    json.NewEncoder(w).Encode(Articles)
+    /*w.Header().Set("Content-Type", "application/json")
+
+    jData, err := json.Marshal(Articles)
+        if err != nil {
+            log.Println(err)
+        }
+
+    w.Write(jData)*/
+
+    //json.NewEncoder(w).Encode(Articles)
+
+    
+
+    jData, err := json.Marshal([]Article{
+        Article{ID: "1", Title: "Hello", Desc: "Article Description", Content: "Article Content"},
+        Article{ID: "2", Title: "Hello 2", Desc: "Article Description", Content: "Article Content"},
+    })
+    if err != nil {
+        log.Println(err)
+    }
+
+    fmt.Println(string(jData))
+    w.Write([]byte(string(jData)))
+}
+
+func returnOne(w http.ResponseWriter, r *http.Request){
+    w.Write([]byte(string(1)))
 }
 
 func returnSingleArticle(w http.ResponseWriter, r *http.Request){
@@ -35,7 +63,12 @@ func returnSingleArticle(w http.ResponseWriter, r *http.Request){
 
 	for _, article := range Articles {
         if article.ID == key {
-            json.NewEncoder(w).Encode(article)
+            jData, err := json.Marshal(article)
+                if err != nil {
+                    log.Println(err)
+                }
+            w.Header().Set("Content-Type", "application/json")
+            w.Write(jData)
 		}
 	}
 }
@@ -61,10 +94,10 @@ func handleRequests() {
 	myRouter.HandleFunc("/all", returnAllArticles)
     myRouter.HandleFunc("/article", createNewArticle).Methods("POST")
     myRouter.HandleFunc("/article/{id}",deleteArticle).Methods("DELETE")
-	myRouter.HandleFunc("/article/{id}",returnSingleArticle)
-    // finally, instead of passing in nil, we want
-    // to pass in our newly created router as the second
-    // argument
+    myRouter.HandleFunc("/article/{id}",returnSingleArticle)
+    myRouter.HandleFunc("/one",returnOne)
+    
+    
     log.Fatal(http.ListenAndServe(":10000", myRouter))
 }
 
